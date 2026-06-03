@@ -5,9 +5,3 @@
     <title>Trilha do Conhecimento</title>
 </head>
 <body>
-
-<nav>
-    <a href="?url=areas">Áreas</a>
-</nav>
-
-<hr>

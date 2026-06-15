@@ -6,6 +6,7 @@ PRAGMA foreign_keys = ON;
 CREATE TABLE IF NOT EXISTS usuarios (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nome TEXT NOT NULL,
+    sobrenome TEXT,
     xp_total INTEGER DEFAULT 0,
     criado_em DATETIME DEFAULT CURRENT_TIMESTAMP
 );

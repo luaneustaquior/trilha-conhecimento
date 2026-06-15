@@ -5,25 +5,25 @@
     <ul>
 
         <li>
-            <a href="?url=entrada">
+            <a href="<?= BASE_URL ?>?url=entrada">
                 Entrada
             </a>
         </li>
 
         <li>
-            <a href="?url=desenvolvimento">
+            <a href="<?= BASE_URL ?>?url=desenvolvimento">
                 Desenvolvimento
             </a>
         </li>
 
         <li>
-            <a href="?url=criar">
+            <a href="<?= BASE_URL ?>?url=criar">
                 Criar
             </a>
         </li>
 
         <li>
-            <a href="?url=myplayer">
+            <a href="<?= BASE_URL ?>?url=myplayer">
                 MyPlayer
             </a>
         </li>

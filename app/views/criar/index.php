@@ -1,6 +1,12 @@
 <h1>Criar Trilha</h1>
 
-<form>
+<?php if (!empty($erro)): ?>
+    <p>
+        <?= htmlspecialchars($erro, ENT_QUOTES, 'UTF-8') ?>
+    </p>
+<?php endif; ?>
+
+<form method="post" action="<?= BASE_URL ?>?url=criar">
 
     <label>
         Nome da Trilha
@@ -11,6 +17,8 @@
     <input
         type="text"
         name="nome"
+        value="<?= htmlspecialchars($dados['nome'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+        required
     >
 
     <br><br>
@@ -24,6 +32,7 @@
     <input
         type="text"
         name="categoria"
+        value="<?= htmlspecialchars($dados['categoria'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
     >
 
     <br><br>
@@ -35,13 +44,14 @@
     <br>
 
     <textarea
+        name="descricao"
         rows="5"
         cols="50"
-    ></textarea>
+    ><?= htmlspecialchars($dados['descricao'] ?? '', ENT_QUOTES, 'UTF-8') ?></textarea>
 
     <br><br>
 
-    <button>
+    <button type="submit">
         Criar Trilha
     </button>
 

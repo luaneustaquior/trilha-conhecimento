@@ -1,5 +1,11 @@
 <?php
 
+if (!defined('BASE_URL')) {
+    $basePath = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+
+    define('BASE_URL', ($basePath === '' ? '' : $basePath) . '/');
+}
+
 spl_autoload_register(function ($class) {
 
     $paths = [

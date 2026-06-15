@@ -19,6 +19,8 @@ class Database
                     PDO::ERRMODE_EXCEPTION
                 );
 
+                self::$connection->exec('PRAGMA foreign_keys = ON');
+
             } catch (PDOException $e) {
 
                 die("Erro na conexão: " . $e->getMessage());

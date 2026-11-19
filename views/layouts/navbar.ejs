@@ -1,0 +1,63 @@
+<header class="topbar">
+    <div class="topbar-inner">
+        <div class="topbar-left">
+            <a href="<%= baseUrl %>entrada" class="brand-link">
+                <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M12 22V10" stroke-linecap="round"/>
+                    <path d="M12 13C12 9 15 6 19 6C19 10 16 13 12 13Z" stroke-linejoin="round"/>
+                    <path d="M12 16C12 12 9 9 5 9C5 13 8 16 12 16Z" stroke-linejoin="round"/>
+                    <circle cx="12" cy="5" r="2"/>
+                </svg>
+                <span>Trilha do Conhecimento</span>
+            </a>
+
+            <nav aria-label="Navegação principal">
+                <ul class="nav-links">
+                    <li>
+                        <a href="<%= baseUrl %>entrada" class="nav-link <%= currentPath === '/entrada' ? 'is-active' : '' %>">
+                            Início
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<%= baseUrl %>desenvolvimento" class="nav-link <%= currentPath.startsWith('/desenvolvimento') || currentPath.startsWith('/trilhas') || currentPath === '/criar' ? 'is-active' : '' %>">
+                            Gestão de Trilha
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<%= baseUrl %>quiz" class="nav-link <%= currentPath.startsWith('/quiz') ? 'is-active' : '' %>">
+                            Questões
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<%= baseUrl %>myplayer" class="nav-link <%= currentPath === '/myplayer' ? 'is-active' : '' %>">
+                            MyPlayer
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<%= baseUrl %>areas" class="nav-link <%= currentPath === '/areas' ? 'is-active' : '' %>">
+                            Áreas
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="topbar-right">
+            <button type="button" id="theme-toggle" class="theme-toggle" aria-pressed="false" title="Alternar entre tema escuro e claro">
+                <svg class="theme-icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke-linecap="round"/>
+                </svg>
+                <svg class="theme-icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" stroke-linejoin="round"/>
+                </svg>
+                <span id="theme-toggle-label">Tema Claro</span>
+            </button>
+
+            <a href="<%= baseUrl %>criar" class="btn btn-brass btn-sm">
+                + Criar Trilha
+            </a>
+        </div>
+    </div>
+</header>
+<main class="page-shell">

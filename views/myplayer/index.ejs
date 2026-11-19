@@ -1,0 +1,156 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="page-header">
+    <div>
+        <h1 class="page-title">MyPlayer</h1>
+        <p class="page-subtitle">
+            <%= usuario.nome %><%= usuario.sobrenome ? ' ' + usuario.sobrenome : '' %>
+            · Classe <%= classe.nome %>
+            · <span class="tabular-nums"><%= usuario.xp_total %> XP</span>
+        </p>
+    </div>
+    <button type="button" class="btn btn-brass" data-open-dialog="editar-usuario">
+        Editar perfil
+    </button>
+</section>
+
+<% if (erro) { %>
+    <div class="alert alert-error" role="alert"><%= erro %></div>
+<% } %>
+<% if (mensagem) { %>
+    <div class="alert alert-info" role="status"><%= mensagem %></div>
+<% } %>
+
+<dialog id="editar-usuario" class="modal-dialog" aria-labelledby="dialog-editar-titulo">
+    <form method="post" action="<%= baseUrl %>myplayer" class="form-stack">
+        <input type="hidden" name="acao" value="editar_usuario">
+        <h2 id="dialog-editar-titulo" class="page-title" style="font-size:1.35rem;">Editar perfil</h2>
+
+        <div class="field-group">
+            <label for="perfil-nome" class="field-label">Nome</label>
+            <input
+                id="perfil-nome"
+                type="text"
+                name="nome"
+                class="field-control"
+                maxlength="80"
+                value="<%= usuario.nome %>"
+                required
+            >
+        </div>
+
+        <div class="field-group">
+            <label for="perfil-sobrenome" class="field-label">Sobrenome</label>
+            <input
+                id="perfil-sobrenome"
+                type="text"
+                name="sobrenome"
+                class="field-control"
+                maxlength="80"
+                value="<%= usuario.sobrenome || '' %>"
+            >
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-brass">Salvar</button>
+            <button type="button" class="btn btn-secondary" data-close-dialog>Cancelar</button>
+        </div>
+    </form>
+</dialog>
+
+<section class="split-grid">
+    <div class="proto-card proto-card-framed">
+        <div class="section-heading-line">
+            <h2>Skills Liberadas</h2>
+        </div>
+
+        <% if (!skills || skills.length === 0) { %>
+            <div class="empty-state">
+                <p>Nenhuma Skill liberada. Uma Skill aparece aqui depois de existirem 3 trilhas com o mesmo nome.</p>
+                <a href="<%= baseUrl %>criar" class="btn btn-brass">+ Criar Trilha</a>
+            </div>
+        <% } else { %>
+            <ul class="item-list">
+                <% skills.forEach(function(skill) { %>
+                    <li class="item-row">
+                        <div class="item-main">
+                            <div class="item-title"><%= skill.nome %></div>
+                            <div class="item-meta tabular-nums"><%= skill.total %> trilhas registradas</div>
+                        </div>
+
+                        <form method="post" action="<%= baseUrl %>myplayer">
+                            <input type="hidden" name="acao" value="acrescentar">
+                            <input type="hidden" name="nome" value="<%= skill.nome %>">
+                            <button type="submit" class="btn btn-view btn-sm">Acrescentar trilha</button>
+                        </form>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+
+        <% if (classe.proxima) { %>
+            <p class="page-subtitle section-gap">
+                Próxima classe: <strong><%= classe.proxima %></strong> (faltam <span class="tabular-nums"><%= classe.faltam %></span> trilhas com o mesmo nome).
+            </p>
+        <% } %>
+    </div>
+
+    <div class="proto-card">
+        <div class="section-heading-line">
+            <h2>Gerenciar Trilhas</h2>
+        </div>
+
+        <% if (!trilhas || trilhas.length === 0) { %>
+            <div class="empty-state">
+                <p>Nenhuma trilha cadastrada.</p>
+            </div>
+        <% } else { %>
+            <%
+              const contagemPorNome = {};
+              trilhas.forEach(function(t) {
+                contagemPorNome[t.nome] = (contagemPorNome[t.nome] || 0) + 1;
+              });
+            %>
+            <ul class="item-list">
+                <% trilhas.forEach(function(trilha) { %>
+                    <%
+                      const countNome = contagemPorNome[trilha.nome] || 0;
+                      const skillWarning = countNome === 3
+                        ? 'Esta é a 3ª trilha com este nome. Excluí-la irá revogar a Skill "' + trilha.nome + '" e pode rebaixar sua classe.'
+                        : '';
+                    %>
+                    <li class="item-row">
+                        <div class="item-main">
+                            <div class="item-title">
+                                <a href="<%= baseUrl %>trilhas/<%= trilha.id %>"><%= trilha.nome %></a>
+                            </div>
+                            <div class="item-meta">
+                                <span><%= trilha.categoria %></span>
+                                <span aria-hidden="true">·</span>
+                                <span class="tabular-nums"><%= trilha.progresso_percent %>%</span>
+                            </div>
+                        </div>
+
+                        <div class="trilha-actions-group">
+                            <a href="<%= baseUrl %>trilhas/<%= trilha.id %>/editar" class="btn btn-brass btn-sm">Editar</a>
+                            <form
+                                method="post"
+                                action="<%= baseUrl %>myplayer"
+                                data-confirm-delete
+                                data-trilha-nome="<%= trilha.nome %>"
+                                data-skill-warning="<%= skillWarning %>"
+                            >
+                                <input type="hidden" name="acao" value="excluir">
+                                <input type="hidden" name="id" value="<%= trilha.id %>">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                        </div>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+    </div>
+</section>
+
+<%- include('../layouts/footer') %>

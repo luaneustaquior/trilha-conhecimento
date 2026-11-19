@@ -1,0 +1,45 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="page-header">
+    <div>
+        <h1 class="page-title">Áreas de Conhecimento</h1>
+        <p class="page-subtitle">Explore as áreas e subáreas cadastradas para organizar suas trilhas de estudo.</p>
+    </div>
+    <a href="<%= baseUrl %>criar" class="btn btn-brass">+ Criar Trilha</a>
+</section>
+
+<section class="areas-grid">
+    <% areas.forEach(function(area) { %>
+        <article class="proto-card proto-card-framed">
+            <div class="item-main">
+                <h2 class="item-title"><%= area.nome_area %></h2>
+                <div class="item-meta">
+                    <span class="tabular-nums"><%= area.subareas.length %> <%= area.subareas.length === 1 ? 'subárea' : 'subáreas' %></span>
+                    <span aria-hidden="true">·</span>
+                    <span class="tabular-nums"><%= area.total_trilhas %> <%= area.total_trilhas === 1 ? 'trilha' : 'trilhas' %></span>
+                </div>
+                <% if (area.descricao) { %>
+                    <p class="page-subtitle"><%= area.descricao %></p>
+                <% } %>
+            </div>
+
+            <% if (area.subareas && area.subareas.length > 0) { %>
+                <ul class="subarea-list">
+                    <% area.subareas.forEach(function(sub) { %>
+                        <li>
+                            <%= sub.nome_subarea %>
+                            <% if (sub.total_trilhas > 0) { %>
+                                <span class="tabular-nums">(<%= sub.total_trilhas %>)</span>
+                            <% } %>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p class="page-subtitle" style="margin-top:0.75rem;">Nenhuma subárea vinculada ainda. Ao criar uma trilha nesta categoria, ela aparecerá aqui.</p>
+            <% } %>
+        </article>
+    <% }); %>
+</section>
+
+<%- include('../layouts/footer') %>

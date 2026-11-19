@@ -1,0 +1,49 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="page-header">
+    <div>
+        <h1 class="page-title">Avaliar Conhecimento</h1>
+        <p class="page-subtitle">Questão <span class="tabular-nums"><%= questao.index + 1 %></span> de <span class="tabular-nums"><%= questao.total %></span> · Área: <%= questao.area %> · +15 XP por acerto</p>
+    </div>
+    <span class="btn btn-secondary btn-sm tabular-nums">Seu XP: <%= usuario.xp_total %> XP</span>
+</section>
+
+<section class="proto-card proto-card-framed">
+    <% if (resultado) { %>
+        <div class="alert <%= resultado.acertou ? 'alert-success' : 'alert-error' %>" role="status">
+            <strong><%= resultado.acertou ? 'Resposta correta! +' + resultado.xpGanho + ' XP' : 'Resposta incorreta.' %></strong>
+            <div><%= resultado.question.explicacao %></div>
+        </div>
+
+        <div class="form-actions">
+            <a href="<%= baseUrl %>quiz?q=<%= (questao.index + 1) % questao.total %>" class="btn btn-hero">
+                Próxima Questão
+            </a>
+            <a href="<%= baseUrl %>entrada" class="btn btn-secondary">Voltar ao Início</a>
+        </div>
+    <% } else { %>
+        <h2 class="featured-title"><%= questao.pergunta %></h2>
+
+        <form method="post" action="<%= baseUrl %>quiz">
+            <input type="hidden" name="question_id" value="<%= questao.id %>">
+            <input type="hidden" name="q_index" value="<%= questao.index %>">
+
+            <div class="quiz-options">
+                <% questao.opcoes.forEach(function(opcao, optIdx) { %>
+                    <label class="quiz-option-label">
+                        <input type="radio" name="resposta" value="<%= optIdx %>" required>
+                        <span><%= opcao %></span>
+                    </label>
+                <% }); %>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-quiz">Responder</button>
+                <a href="<%= baseUrl %>quiz?q=<%= (questao.index + 1) % questao.total %>" class="btn btn-secondary">Pular</a>
+            </div>
+        </form>
+    <% } %>
+</section>
+
+<%- include('../layouts/footer') %>

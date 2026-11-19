@@ -1,0 +1,77 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="page-header">
+    <div>
+        <h1 class="page-title">Editar Trilha</h1>
+        <p class="page-subtitle">Atualize os dados, categoria ou status de "<%= trilha.nome %>".</p>
+    </div>
+    <a href="<%= baseUrl %>trilhas/<%= trilha.id %>" class="btn btn-view">Visualizar Níveis</a>
+</section>
+
+<section class="proto-card proto-card-framed">
+    <% if (erro) { %>
+        <div class="alert alert-error" role="alert"><%= erro %></div>
+    <% } %>
+
+    <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/editar" class="form-stack">
+        <div class="field-group">
+            <label for="nome" class="field-label">Nome da Trilha</label>
+            <input
+                id="nome"
+                type="text"
+                name="nome"
+                class="field-control"
+                maxlength="120"
+                value="<%= dados.nome || '' %>"
+                required
+            >
+        </div>
+
+        <div class="field-group">
+            <label for="categoria" class="field-label">Categoria / Subárea</label>
+            <input
+                id="categoria"
+                type="text"
+                name="categoria"
+                list="subareas-list"
+                class="field-control"
+                maxlength="80"
+                value="<%= dados.categoria || '' %>"
+            >
+            <datalist id="subareas-list">
+                <% if (subareas && subareas.length > 0) { %>
+                    <% subareas.forEach(function(sub) { %>
+                        <option value="<%= sub.nome_subarea %>"><%= sub.nome_area %></option>
+                    <% }); %>
+                <% } %>
+            </datalist>
+        </div>
+
+        <div class="field-group">
+            <label for="status" class="field-label">Status</label>
+            <select id="status" name="status" class="field-control">
+                <% statuses.forEach(function(st) { %>
+                    <option value="<%= st %>" <%= dados.status === st ? 'selected' : '' %>><%= st %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="descricao" class="field-label">Descrição</label>
+            <textarea
+                id="descricao"
+                name="descricao"
+                class="field-control"
+                maxlength="1000"
+            ><%= dados.descricao || '' %></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-brass">Salvar Alterações</button>
+            <a href="<%= baseUrl %>desenvolvimento" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</section>
+
+<%- include('../layouts/footer') %>

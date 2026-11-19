@@ -1,0 +1,112 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="page-header">
+    <div>
+        <h1 class="page-title"><%= trilha.nome %></h1>
+        <p class="page-subtitle">
+            <span><%= trilha.area %> / <%= trilha.categoria %></span>
+            <span aria-hidden="true">·</span>
+            <span class="status-text <%= trilha.status === 'Concluída' ? 'status-concluida' : (trilha.status === 'Pausada' ? 'status-pausada' : 'status-andamento') %>">
+                <%= trilha.status %>
+            </span>
+            <span aria-hidden="true">·</span>
+            <span class="tabular-nums"><%= trilha.progresso_percent %>% concluído</span>
+        </p>
+    </div>
+    <div class="trilha-actions-group">
+        <a href="<%= baseUrl %>trilhas/<%= trilha.id %>/editar" class="btn btn-brass">Editar Trilha</a>
+        <a href="<%= baseUrl %>desenvolvimento" class="btn btn-secondary">Gestão de Trilha</a>
+    </div>
+</section>
+
+<% if (erro) { %>
+    <div class="alert alert-error" role="alert"><%= erro %></div>
+<% } %>
+
+<section class="split-grid">
+    <div class="proto-card proto-card-framed">
+        <div class="section-heading-line">
+            <h2>Níveis da Trilha</h2>
+        </div>
+
+        <div class="progress-row-inline" style="margin-bottom: 1.25rem;">
+            <div class="progress-track">
+                <div class="progress-fill" style="width: <%= trilha.progresso_percent %>%"></div>
+            </div>
+            <span class="progress-percent tabular-nums"><%= trilha.progresso_percent %>%</span>
+        </div>
+
+        <% if (!trilha.niveis || trilha.niveis.length === 0) { %>
+            <div class="empty-state">
+                <p>Nenhum nível cadastrado nesta trilha ainda. Adicione o primeiro nível ao lado.</p>
+            </div>
+        <% } else { %>
+            <ul class="nivel-tree-list">
+                <% trilha.niveis.forEach(function(nivel) { %>
+                    <li class="nivel-tree-node">
+                        <div class="nivel-node-left">
+                            <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis/<%= nivel.id %>/alternar">
+                                <button
+                                    type="submit"
+                                    class="nivel-check-btn <%= Number(nivel.concluido) === 1 ? 'is-done' : '' %>"
+                                    title="<%= Number(nivel.concluido) === 1 ? 'Reabrir nível' : 'Concluir nível' %>"
+                                >
+                                    <%= Number(nivel.concluido) === 1 ? '✓' : '' %>
+                                </button>
+                            </form>
+
+                            <span class="nivel-node-title <%= Number(nivel.concluido) === 1 ? 'is-done' : '' %>">
+                                <span class="tabular-nums">Nível <%= nivel.ordem %>:</span> <%= nivel.nome %>
+                            </span>
+                        </div>
+
+                        <div class="trilha-actions-group">
+                            <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis/<%= nivel.id %>/alternar">
+                                <button type="submit" class="btn btn-view btn-sm">
+                                    <%= Number(nivel.concluido) === 1 ? 'Reabrir' : 'Concluir' %>
+                                </button>
+                            </form>
+                            <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis/<%= nivel.id %>/excluir">
+                                <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                            </form>
+                        </div>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+    </div>
+
+    <div class="proto-card">
+        <div class="section-heading-line">
+            <h2>Adicionar Nível</h2>
+        </div>
+        <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis" class="form-stack">
+            <div class="field-group">
+                <label for="nivel-nome" class="field-label">Nome do Nível / Etapa</label>
+                <input
+                    id="nivel-nome"
+                    type="text"
+                    name="nome"
+                    class="field-control"
+                    maxlength="120"
+                    placeholder="Ex.: Fundamentos e Sintaxe"
+                    required
+                >
+                <span class="field-hint">Cada nível concluído concede +20 XP.</span>
+            </div>
+            <button type="submit" class="btn btn-brass">+ Adicionar Nível</button>
+        </form>
+
+        <% if (trilha.descricao) { %>
+            <div class="section-gap">
+                <div class="section-heading-line">
+                    <h3>Descrição da Trilha</h3>
+                </div>
+                <p class="page-subtitle"><%= trilha.descricao %></p>
+            </div>
+        <% } %>
+    </div>
+</section>
+
+<%- include('../layouts/footer') %>

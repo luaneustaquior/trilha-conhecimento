@@ -1,0 +1,194 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="page-header">
+    <div>
+        <h1 class="page-title">Gestão de Trilha</h1>
+        <p class="page-subtitle">Expanda uma trilha para gerenciar seus níveis em árvore, acompanhar progresso e editar etapas.</p>
+    </div>
+    <a href="<%= baseUrl %>criar" class="btn btn-brass">+ Criar Trilha +</a>
+</section>
+
+<div class="toolbar-row">
+    <div class="segmented-control" role="tablist" aria-label="Filtrar por status">
+        <button type="button" class="segmented-btn is-active" data-filter-status="all">Todas (<span class="tabular-nums"><%= stats.total_trilhas %></span>)</button>
+        <button type="button" class="segmented-btn" data-filter-status="Em andamento">Em andamento (<span class="tabular-nums"><%= stats.em_andamento %></span>)</button>
+        <button type="button" class="segmented-btn" data-filter-status="Concluída">Concluídas (<span class="tabular-nums"><%= stats.concluidas %></span>)</button>
+        <button type="button" class="segmented-btn" data-filter-status="Pausada">Pausadas (<span class="tabular-nums"><%= stats.pausadas %></span>)</button>
+    </div>
+
+    <input
+        type="search"
+        id="trilha-search"
+        class="search-input"
+        placeholder="Buscar trilha ou categoria..."
+        aria-label="Buscar trilhas"
+    >
+</div>
+
+<% if (!trilhas || trilhas.length === 0) { %>
+    <section class="proto-card proto-card-framed empty-state">
+        <p>Nenhuma trilha cadastrada ainda.</p>
+        <a href="<%= baseUrl %>criar" class="btn btn-brass">+ Criar Primeira Trilha</a>
+    </section>
+<% } else { %>
+    <section class="trilha-accordion-shell" aria-label="Árvore de Trilhas e Níveis">
+        <% trilhas.forEach(function(trilha, idx) { %>
+            <% const expanded = idx === 0; %>
+            <article
+                class="trilha-accordion-item"
+                data-trilha-row
+                data-status="<%= trilha.status %>"
+                data-search="<%= trilha.nome %> <%= trilha.categoria %> <%= trilha.area %> <%= trilha.descricao || '' %>"
+            >
+                <div class="trilha-accordion-header">
+                    <button
+                        type="button"
+                        class="trilha-accordion-trigger"
+                        data-accordion-trigger
+                        aria-expanded="<%= expanded ? 'true' : 'false' %>"
+                        aria-controls="trilha-tree-<%= trilha.id %>"
+                    >
+                        <span class="trilha-accordion-chevron" aria-hidden="true">▸</span>
+                        <span><%= trilha.nome %></span>
+                        <span class="trilha-header-meta">
+                            · <%= trilha.categoria %>
+                            · <span class="status-text <%= trilha.status === 'Concluída' ? 'status-concluida' : (trilha.status === 'Pausada' ? 'status-pausada' : 'status-andamento') %>"><%= trilha.status %></span>
+                            · <span class="tabular-nums"><%= trilha.progresso_percent %>%</span>
+                        </span>
+                    </button>
+
+                    <div class="trilha-actions-group">
+                        <a href="<%= baseUrl %>trilhas/<%= trilha.id %>/editar" class="btn btn-brass btn-sm">Editar</a>
+                        <a href="<%= baseUrl %>trilhas/<%= trilha.id %>" class="btn btn-view btn-sm">Visualizar</a>
+                        <form
+                            method="post"
+                            action="<%= baseUrl %>trilhas/<%= trilha.id %>/excluir"
+                            data-confirm-delete
+                            data-trilha-nome="<%= trilha.nome %>"
+                        >
+                            <input type="hidden" name="redirect_to" value="/desenvolvimento">
+                            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="trilha-tree-<%= trilha.id %>" class="trilha-tree-body" <%= expanded ? '' : 'hidden' %>>
+                    <% if (!trilha.niveis || trilha.niveis.length === 0) { %>
+                        <p class="item-meta">Nenhum nível cadastrado nesta trilha ainda. Adicione etapas abaixo:</p>
+                    <% } else { %>
+                        <ul class="nivel-tree-list">
+                            <% trilha.niveis.forEach(function(nivel) { %>
+                                <li class="nivel-tree-node">
+                                    <div class="nivel-node-left">
+                                        <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis/<%= nivel.id %>/alternar">
+                                            <input type="hidden" name="redirect_to" value="/desenvolvimento">
+                                            <button
+                                                type="submit"
+                                                class="nivel-check-btn <%= Number(nivel.concluido) === 1 ? 'is-done' : '' %>"
+                                                title="<%= Number(nivel.concluido) === 1 ? 'Reabrir nível' : 'Concluir nível' %>"
+                                                aria-label="Alternar conclusão de <%= nivel.nome %>"
+                                            >
+                                                <%= Number(nivel.concluido) === 1 ? '✓' : '' %>
+                                            </button>
+                                        </form>
+
+                                        <span class="nivel-node-title <%= Number(nivel.concluido) === 1 ? 'is-done' : '' %>">
+                                            <span class="tabular-nums">Nível <%= nivel.ordem %>:</span> <%= nivel.nome %>
+                                        </span>
+                                    </div>
+
+                                    <div class="trilha-actions-group">
+                                        <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis/<%= nivel.id %>/alternar">
+                                            <input type="hidden" name="redirect_to" value="/desenvolvimento">
+                                            <button type="submit" class="btn btn-view btn-sm">
+                                                <%= Number(nivel.concluido) === 1 ? 'Reabrir' : 'Concluir' %>
+                                            </button>
+                                        </form>
+                                        <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis/<%= nivel.id %>/excluir">
+                                            <input type="hidden" name="redirect_to" value="/desenvolvimento">
+                                            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                                        </form>
+                                    </div>
+                                </li>
+                            <% }); %>
+                        </ul>
+                    <% } %>
+
+                    <form method="post" action="<%= baseUrl %>trilhas/<%= trilha.id %>/niveis" class="inline-add-nivel">
+                        <input type="hidden" name="redirect_to" value="/desenvolvimento">
+                        <input
+                            type="text"
+                            name="nome"
+                            class="field-control"
+                            maxlength="120"
+                            placeholder="Adicionar novo nível ou etapa em <%= trilha.nome %>..."
+                            required
+                        >
+                        <button type="submit" class="btn btn-brass btn-sm">+ Adicionar Nível</button>
+                    </form>
+                </div>
+            </article>
+        <% }); %>
+
+        <div id="trilha-filter-empty" class="proto-card empty-state" hidden>
+            <p>Nenhuma trilha corresponde ao filtro aplicado.</p>
+        </div>
+    </section>
+<% } %>
+
+<section class="split-grid section-gap">
+    <div class="proto-card">
+        <div class="section-heading-line">
+            <h2>Histórico de Atividades</h2>
+        </div>
+        <% if (!historico || historico.length === 0) { %>
+            <p class="item-meta">Nenhuma atividade registrada ainda.</p>
+        <% } else { %>
+            <ul class="item-list">
+                <% historico.forEach(function(evento) { %>
+                    <li class="item-row">
+                        <div class="item-main">
+                            <div class="item-title"><%= evento.descricao %></div>
+                            <div class="item-meta">
+                                <span class="tabular-nums"><%= evento.criado_em %></span>
+                                <% if (evento.xp_delta !== 0) { %>
+                                    <span aria-hidden="true">·</span>
+                                    <span class="tabular-nums status-text <%= evento.xp_delta > 0 ? 'status-concluida' : 'status-pausada' %>">
+                                        <%= evento.xp_delta > 0 ? '+' + evento.xp_delta : evento.xp_delta %> XP
+                                    </span>
+                                <% } %>
+                            </div>
+                        </div>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+    </div>
+
+    <div class="proto-card">
+        <div class="section-heading-line">
+            <h2>Estatísticas</h2>
+        </div>
+        <ul class="item-list">
+            <li class="item-row">
+                <span class="item-main">XP acumulado</span>
+                <strong class="tabular-nums"><%= usuario.xp_total %> XP</strong>
+            </li>
+            <li class="item-row">
+                <span class="item-main">Total de trilhas</span>
+                <strong class="tabular-nums"><%= stats.total_trilhas %></strong>
+            </li>
+            <li class="item-row">
+                <span class="item-main">Categorias utilizadas</span>
+                <strong class="tabular-nums"><%= stats.categorias_ativas %></strong>
+            </li>
+            <li class="item-row">
+                <span class="item-main">Níveis concluídos</span>
+                <strong class="tabular-nums"><%= stats.niveis_concluidos %> / <%= stats.total_niveis %></strong>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<%- include('../layouts/footer') %>

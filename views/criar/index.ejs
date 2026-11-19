@@ -1,0 +1,82 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="page-header">
+    <div>
+        <h1 class="page-title">Criar Trilha</h1>
+        <p class="page-subtitle">Cadastre uma nova trilha de conhecimento. Cada trilha criada concede +50 XP.</p>
+    </div>
+    <a href="<%= baseUrl %>desenvolvimento" class="btn btn-secondary">Voltar</a>
+</section>
+
+<section class="proto-card proto-card-framed">
+    <% if (erro) { %>
+        <div class="alert alert-error" role="alert"><%= erro %></div>
+    <% } %>
+
+    <form method="post" action="<%= baseUrl %>criar" class="form-stack">
+        <div class="field-group">
+            <label for="nome" class="field-label">Nome da Trilha</label>
+            <input
+                id="nome"
+                type="text"
+                name="nome"
+                class="field-control"
+                maxlength="120"
+                value="<%= dados.nome || '' %>"
+                placeholder="Ex.: Dominando Inteligência Artificial"
+                required
+            >
+            <span class="field-hint">Máximo de 120 caracteres. Três trilhas com o mesmo nome desbloqueiam uma Skill.</span>
+        </div>
+
+        <div class="field-group">
+            <label for="categoria" class="field-label">Categoria / Subárea</label>
+            <input
+                id="categoria"
+                type="text"
+                name="categoria"
+                list="subareas-list"
+                class="field-control"
+                maxlength="80"
+                value="<%= dados.categoria || '' %>"
+                placeholder="Ex.: Node.js, React, SQLite (deixe vazio para Geral)"
+            >
+            <datalist id="subareas-list">
+                <% if (subareas && subareas.length > 0) { %>
+                    <% subareas.forEach(function(sub) { %>
+                        <option value="<%= sub.nome_subarea %>"><%= sub.nome_area %></option>
+                    <% }); %>
+                <% } %>
+            </datalist>
+        </div>
+
+        <div class="field-group">
+            <label for="status" class="field-label">Status inicial</label>
+            <select id="status" name="status" class="field-control">
+                <% statuses.forEach(function(st) { %>
+                    <option value="<%= st %>" <%= (dados.status || 'Em andamento') === st ? 'selected' : '' %>><%= st %></option>
+                <% }); %>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="descricao" class="field-label">Descrição</label>
+            <textarea
+                id="descricao"
+                name="descricao"
+                class="field-control"
+                maxlength="1000"
+                placeholder="Descreva os objetivos, referências ou plano de estudo..."
+            ><%= dados.descricao || '' %></textarea>
+            <span class="field-hint">Máximo de 1000 caracteres.</span>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-brass">+ Criar Trilha</button>
+            <a href="<%= baseUrl %>desenvolvimento" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</section>
+
+<%- include('../layouts/footer') %>

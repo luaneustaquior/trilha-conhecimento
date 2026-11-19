@@ -1,0 +1,16 @@
+{
+  "name": "trilha-conhecimento",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "test": "node --test tests/*.test.js",
+    "lint": "node --check server.js && node --check src/app.js && node --check src/db/database.js && node --check src/routes/web.js && node --check src/models/Usuario.js && node --check src/models/Area.js && node --check src/models/Trilha.js && node --check src/models/Quiz.js && node --check src/utils/validation.js && node --check public/assets/js/app.js && node --check tests/app.test.js",
+    "build": "node -e \"console.log('Build completed')\""
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
+}

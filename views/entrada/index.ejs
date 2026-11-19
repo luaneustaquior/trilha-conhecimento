@@ -1,0 +1,215 @@
+<%- include('../layouts/header') %>
+<%- include('../layouts/navbar') %>
+
+<section class="home-top-grid">
+    <!-- Card Principal em Destaque (Esquerda) -->
+    <article class="proto-card proto-card-framed">
+        <% if (trilhaDestaque) { %>
+            <p class="featured-kicker">Trilha:</p>
+            <h1 class="featured-title"><%= trilhaDestaque.nome %></h1>
+
+            <div class="progress-row-inline">
+                <div class="progress-track" role="progressbar" aria-valuenow="<%= trilhaDestaque.progresso_percent %>" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-fill" style="width: <%= trilhaDestaque.progresso_percent %>%"></div>
+                </div>
+                <span class="progress-percent tabular-nums"><%= trilhaDestaque.progresso_percent %>%</span>
+            </div>
+
+            <div class="featured-cta-wrap">
+                <a href="<%= baseUrl %>trilhas/<%= trilhaDestaque.id %>" class="btn btn-hero">
+                    Continuar
+                </a>
+            </div>
+
+            <p class="featured-desc">
+                <%= trilhaDestaque.descricao || 'Aprofunde seus conhecimentos nesta trilha e conclua novos níveis para ganhar XP.' %>
+            </p>
+        <% } else { %>
+            <p class="featured-kicker">Trilha:</p>
+            <h1 class="featured-title">Comece sua Jornada</h1>
+            <div class="progress-row-inline">
+                <div class="progress-track" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-fill" style="width: 0%"></div>
+                </div>
+                <span class="progress-percent tabular-nums">0%</span>
+            </div>
+            <div class="featured-cta-wrap">
+                <a href="<%= baseUrl %>criar" class="btn btn-hero">
+                    Criar Trilha
+                </a>
+            </div>
+            <p class="featured-desc">
+                Nenhuma trilha cadastrada ainda. Crie sua primeira trilha de estudo e acompanhe seu progresso aqui.
+            </p>
+        <% } %>
+    </article>
+
+    <!-- Coluna Direita: Trilhas em Progresso + Avaliar Conhecimento -->
+    <div class="home-right-stack">
+        <section class="proto-card proto-card-framed">
+            <div class="section-heading-line">
+                <h2>Trilhas em Progresso</h2>
+            </div>
+
+            <% if (!trilhasEmProgresso || trilhasEmProgresso.length === 0) { %>
+                <p class="item-meta">Nenhuma trilha cadastrada no momento.</p>
+            <% } else { %>
+                <ul class="progress-list">
+                    <% trilhasEmProgresso.forEach(function(trilha) { %>
+                        <li class="progress-list-item">
+                            <span class="cat-glyph" aria-hidden="true">
+                                <%= (trilha.categoria || 'G').slice(0, 2).toUpperCase() %>
+                            </span>
+                            <a href="<%= baseUrl %>trilhas/<%= trilha.id %>" class="progress-list-name" title="<%= trilha.nome %>">
+                                <%= trilha.nome %>
+                            </a>
+                            <div class="progress-track progress-track-sm">
+                                <div class="progress-fill" style="width: <%= trilha.progresso_percent %>%"></div>
+                            </div>
+                            <span class="progress-percent tabular-nums"><%= trilha.progresso_percent %>%</span>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } %>
+        </section>
+
+        <section class="proto-card proto-card-framed">
+            <div class="section-heading-line">
+                <h2>Avaliar Conhecimento</h2>
+            </div>
+            <div class="quiz-cta-row">
+                <p class="quiz-cta-text">Teste seus conhecimentos agora e acumule +15 XP por acerto!</p>
+                <a href="<%= baseUrl %>quiz" class="btn btn-quiz">
+                    Iniciar Quiz
+                </a>
+            </div>
+        </section>
+    </div>
+</section>
+
+<!-- Seção Inferior: Sua Árvore de Conhecimento -->
+<section class="knowledge-tree-section proto-card">
+    <div class="section-heading-line">
+        <h2>Sua Árvore de Conhecimento</h2>
+    </div>
+
+    <div class="tree-grid">
+        <div>
+            <div class="tree-stats-pair">
+                <div>
+                    <div class="tree-stat-num tabular-nums"><%= usuario.xp_total %></div>
+                    <div class="tree-stat-label">XP Acumulado (<%= stats.niveis_concluidos %> níveis)</div>
+                </div>
+                <div>
+                    <div class="tree-stat-num tabular-nums"><%= stats.areas_ativas || areas.length %></div>
+                    <div class="tree-stat-label">Principais Áreas</div>
+                </div>
+            </div>
+
+            <div class="classe-emblem-row">
+                <div class="classe-emblem-icon" aria-hidden="true">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <div>
+                    <div class="classe-emblem-kicker">Classe Atual · <%= usuario.nome %><%= usuario.sobrenome ? ' ' + usuario.sobrenome : '' %></div>
+                    <div class="classe-emblem-title">Nível <%= classe.nome %></div>
+                </div>
+            </div>
+
+            <div class="skills-inline-wrap">
+                <% if (skills && skills.length > 0) { %>
+                    <strong>Skills liberadas:</strong>
+                    <%= skills.map(s => s.nome).join(' · ') %>
+                <% } else if (classe.proxima) { %>
+                    Próxima classe: <strong><%= classe.proxima %></strong> (faltam <span class="tabular-nums"><%= classe.faltam %></span> trilhas com o mesmo nome).
+                <% } %>
+            </div>
+        </div>
+
+        <!-- Ilustração Vetorial Interativa da Árvore de Conhecimento -->
+        <div class="tree-canvas-wrap">
+            <svg class="knowledge-tree-svg" viewBox="0 0 560 270" role="img" aria-label="Diagrama visual da sua Árvore de Conhecimento conectando áreas e trilhas">
+                <defs>
+                    <linearGradient id="trunkGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stop-color="#8b6944"/>
+                        <stop offset="100%" stop-color="#4e3923"/>
+                    </linearGradient>
+                    <filter id="nodeGlow" x="-30%" y="-30%" width="160%" height="160%">
+                        <feGaussianBlur stdDeviation="3" result="blur"/>
+                        <feMerge>
+                            <feMergeNode in="blur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+
+                <!-- Base e Tronco -->
+                <path d="M180 258 Q280 245 380 258" fill="none" stroke="var(--tree-trunk)" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+                <path d="M262 252 Q272 215 270 165 L290 165 Q288 215 298 252 Z" fill="url(#trunkGrad)"/>
+
+                <!-- Ramos Circuitos -->
+                <path d="M275 180 L275 125 L145 125 L145 78" fill="none" stroke="var(--tree-line)" stroke-width="2.5"/>
+                <path d="M280 175 L280 56" fill="none" stroke="var(--tree-line)" stroke-width="2.5"/>
+                <path d="M285 180 L285 125 L415 125 L415 78" fill="none" stroke="var(--tree-line-gold)" stroke-width="2.5"/>
+                <path d="M270 198 L175 198 L175 155" fill="none" stroke="var(--tree-line-gold)" stroke-width="2"/>
+                <path d="M290 198 L385 198 L385 155" fill="none" stroke="var(--tree-line)" stroke-width="2"/>
+
+                <!-- Pontos de conexão brilhantes -->
+                <circle cx="280" cy="125" r="4" fill="#38bdf8" filter="url(#nodeGlow)"/>
+                <circle cx="215" cy="125" r="3.5" fill="#fbbf24"/>
+                <circle cx="345" cy="125" r="3.5" fill="#38bdf8"/>
+
+                <!-- Nó Topo (Engrenagem / Backend) -->
+                <a href="<%= baseUrl %>areas">
+                    <g transform="translate(280, 44)">
+                        <circle r="24" fill="var(--bg-surface-elevated)" stroke="#38bdf8" stroke-width="2" filter="url(#nodeGlow)"/>
+                        <circle r="9" fill="none" stroke="#38bdf8" stroke-width="2.5"/>
+                        <path d="M0 -14 v4 M0 10 v4 M-14 0 h4 M10 0 h4 M-10 -10 l3 3 M7 7 l3 3 M10 -10 l-3 3 M-7 7 l-3 3" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+                        <text y="37" text-anchor="middle" fill="var(--text-secondary)" font-size="11" font-weight="600">Backend</text>
+                    </g>
+                </a>
+
+                <!-- Nó Esquerda Superior (Livro / Frontend) -->
+                <a href="<%= baseUrl %>desenvolvimento">
+                    <g transform="translate(145, 72)">
+                        <rect x="-24" y="-22" width="48" height="44" rx="8" fill="var(--bg-surface-elevated)" stroke="#38bdf8" stroke-width="2"/>
+                        <path d="M-12 -8 h10 v18 h-10 z M2 -8 h10 v18 h-10 z" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round"/>
+                        <text y="36" text-anchor="middle" fill="var(--text-secondary)" font-size="11" font-weight="600">Frontend</text>
+                    </g>
+                </a>
+
+                <!-- Nó Direita Superior (Prancheta / Banco de Dados) -->
+                <a href="<%= baseUrl %>areas">
+                    <g transform="translate(415, 72)">
+                        <rect x="-24" y="-22" width="48" height="44" rx="8" fill="var(--bg-surface-elevated)" stroke="#f59e0b" stroke-width="2"/>
+                        <ellipse cx="0" cy="-7" rx="11" ry="4.5" fill="none" stroke="#fbbf24" stroke-width="2"/>
+                        <path d="M-11 -7 v14 c0 2.5 5 4.5 11 4.5 s11 -2 11 -4.5 v-14" fill="none" stroke="#fbbf24" stroke-width="2"/>
+                        <text y="36" text-anchor="middle" fill="var(--text-secondary)" font-size="11" font-weight="600">Dados</text>
+                    </g>
+                </a>
+
+                <!-- Nó Esquerda Inferior (Diálogo / Questões) -->
+                <a href="<%= baseUrl %>quiz">
+                    <g transform="translate(175, 148)">
+                        <circle r="21" fill="var(--bg-surface-elevated)" stroke="#fbbf24" stroke-width="2"/>
+                        <path d="M-9 -6 h18 v11 h-10 l-5 4 v-4 h-3 z" fill="none" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round"/>
+                        <text y="35" text-anchor="middle" fill="var(--text-secondary)" font-size="11" font-weight="600">Questões</text>
+                    </g>
+                </a>
+
+                <!-- Nó Direita Inferior (Frasco / IA & Ciência) -->
+                <a href="<%= baseUrl %>myplayer">
+                    <g transform="translate(385, 148)">
+                        <circle r="21" fill="var(--bg-surface-elevated)" stroke="#38bdf8" stroke-width="2"/>
+                        <path d="M-4 -10 h8 M-3 -10 v5 l-7 11 c-1 1.5 0 3 2 3 h16 c2 0 3 -1.5 2 -3 l-7 -11 v-5" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linejoin="round"/>
+                        <text y="35" text-anchor="middle" fill="var(--text-secondary)" font-size="11" font-weight="600">Skills (<%= skills.length %>)</text>
+                    </g>
+                </a>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<%- include('../layouts/footer') %>
